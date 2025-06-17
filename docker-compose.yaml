@@ -1,0 +1,102 @@
+services:
+  fastapi_e2e:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: fastapi_db
+      BLOB_STORAGE_CONN: your_blob_connection_string
+      LOG_LEVEL: "INFO"
+      CELERY_BROKER_URL: "redis://redis_container:6379/0"
+      CELERY_RESULT_BACKEND: "redis://redis_container:6379/0"
+      ESM_API_URL: "http://wag:8010"
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/fastapi_db"
+      THOR_API_URL: "http://thor:8030"
+      SPE_API_URL: "http://spe:8020"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - my_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  db:
+    image: postgres:14-alpine
+    volumes:
+        - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: fastapi_db
+    ports:
+      - "5432:5432"
+    expose:
+      - 5432
+    networks:
+      - my_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  worker:
+    build: .
+    container_name: worker_container
+    environment:
+      CELERY_BROKER_URL: "redis://redis_container:6379/0"  # Use container name for Redis
+      CELERY_RESULT_BACKEND: "redis://redis_container:6379/0"
+      ESM_API_URL: "http://wag:8010/"
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/fastapi_db"
+      LOG_LEVEL: "INFO"
+      THOR_API_URL: "http://thor:8030/"
+      SPE_API_URL: "http://spe:8020/"
+    depends_on:
+      - redis
+      - db
+      - fastapi_e2e
+    volumes:
+      - .:/app
+      - /tmp:/tmp  # Share /tmp directory with the host
+    networks:
+      - my_network
+    entrypoint: ["poetry", "run", "celery", "-A", "src.celery_app", "worker", "--loglevel=INFO"]
+  flower:
+    build : .  # Reusing base image; no need to build again
+    container_name: flower_container
+    environment:
+      CELERY_BROKER_URL: "redis://redis_container:6379/0"  # Use container name for Redis
+      CELERY_RESULT_BACKEND: "redis://redis_container:6379/0"
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/fastapi_db"  # Fix to match PostgreSQL
+      THOR_API_URL: "http://thor:8030/"
+      SPE_API_URL: "http://spe:8020/"
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+      - /tmp:/tmp  # Share /tmp directory with the host
+    command: ["poetry", "run", "celery", "-A", "src.celery_app", "flower", "--port=5555"]
+    ports:
+      - "5555:5555"
+    networks:
+      - my_network
+  
+  
+  redis:
+    image: "redis:alpine"
+    container_name: redis_container
+    networks:
+      - my_network
+ 
+ 
+
+
+volumes:
+    postgres_data: 
+# to run the services in the same network for communicating with each other
+# docker network create my_network
+networks:
+  my_network:
+    driver: bridge
+    external: true

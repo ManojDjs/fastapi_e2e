@@ -1,0 +1,47 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "FastAPI: Uvicorn",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "args": ["--reload"],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "Python: Module",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": ["src.api.main:app", "--reload"]
+        },
+        {
+            "name": "FastAPI: Uvicorn with Poetry",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "poetry",
+            "args": ["run", "uvicorn", "src.main:app", "--reload"],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "Python: Debug Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "poetry",
+            "args": ["run", "pytest"], // Runs all tests
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${cwd}",
+            },
+            "purpose": ["debug-test"],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }
+    ]
+}

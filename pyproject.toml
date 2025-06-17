@@ -1,0 +1,57 @@
+[tool.poetry]
+name = "fastapi_e2e"
+version = "0.1.0"
+description = ""
+authors = ["Manoj Doddi <djsmanoj0000@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "*", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.115.12"
+uvicorn = "^0.34.3"
+pytest = "^8.4.0"
+pandas = "^2.3.0"
+numpy = "^2.3.0"
+celery = "^5.5.3"
+redis = "^6.2.0"
+sqlalchemy = "^2.0.41"
+pydantic = {extras = ["email"], version = "^2.11.7"}
+psycopg2-binary = "^2.9.10"
+python-multipart = "^0.0.20"
+configparser = "^7.2.0"
+flower = "^2.0.1"
+colorlog = "^6.9.0"
+black = "^25.1.0"
+pylint = "^3.3.7"
+isort = "^6.0.1"
+ruff = "^0.11.13"
+
+[tool.ruff]
+line-length = 88
+src=["src","tests"]
+exclude = [ "docs/*", ".venv/*"]
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 120
+
+[tool.black]
+line-length = 150
+target-version = ['py38']
+include = '\.pyi?$'
+exclude = ''
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--strict-markers --tb=short"
+testpaths = ["tests"]
+python_files = [
+    "*_test.py",
+    "test_*.py"
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
