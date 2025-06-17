@@ -13,10 +13,10 @@ services:
       LOG_LEVEL: "INFO"
       CELERY_BROKER_URL: "redis://redis_container:6379/0"
       CELERY_RESULT_BACKEND: "redis://redis_container:6379/0"
-      ESM_API_URL: "http://wag:8010"
+      ESM_API_URL: "http://api1:8010"
       DATABASE_URL: "postgresql://postgres:postgres@db:5432/fastapi_db"
-      THOR_API_URL: "http://thor:8030"
-      SPE_API_URL: "http://spe:8020"
+      THOR_API_URL: "http://api2:8030"
+      SPE_API_URL: "http://api3spe:8020"
     depends_on:
       - db
       - redis
@@ -47,11 +47,11 @@ services:
     environment:
       CELERY_BROKER_URL: "redis://redis_container:6379/0"  # Use container name for Redis
       CELERY_RESULT_BACKEND: "redis://redis_container:6379/0"
-      ESM_API_URL: "http://wag:8010/"
+      ESM_API_URL: "http://api1:8010/"
       DATABASE_URL: "postgresql://postgres:postgres@db:5432/fastapi_db"
       LOG_LEVEL: "INFO"
-      THOR_API_URL: "http://thor:8030/"
-      SPE_API_URL: "http://spe:8020/"
+      THOR_API_URL: "http://api3:8030/"
+      SPE_API_URL: "http://api2:8020/"
     depends_on:
       - redis
       - db
@@ -69,8 +69,8 @@ services:
       CELERY_BROKER_URL: "redis://redis_container:6379/0"  # Use container name for Redis
       CELERY_RESULT_BACKEND: "redis://redis_container:6379/0"
       DATABASE_URL: "postgresql://postgres:postgres@db:5432/fastapi_db"  # Fix to match PostgreSQL
-      THOR_API_URL: "http://thor:8030/"
-      SPE_API_URL: "http://spe:8020/"
+      THOR_API_URL: "http://api3:8030/"
+      SPE_API_URL: "http://api2:8020/"
     depends_on:
       - redis
     volumes:
